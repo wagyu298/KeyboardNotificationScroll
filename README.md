@@ -1,2 +1,2 @@
-# UIScrollView-KeyboardNotification
+# KeyboardNotificationScroll
 iOS category to manage bottom inset of UIScrollView when keybord show / hide

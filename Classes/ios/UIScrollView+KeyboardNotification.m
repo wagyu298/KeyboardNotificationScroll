@@ -3,19 +3,41 @@
 
 #import "UIScrollView+KeyboardNotification.h"
 
+@implementation NSNotification (KeyboardNotification)
+
+- (NSNumber *)keyboardAnimationDuration
+{
+    NSDictionary *info = [self userInfo];
+    return (NSNumber *)[info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+}
+
+- (NSNumber *)keyboardAnimationCurve
+{
+    NSDictionary *info = [self userInfo];
+    return (NSNumber *)[info objectForKey:UIKeyboardAnimationCurveUserInfoKey];
+}
+
+- (CGRect)keyboardRect
+{
+    NSDictionary *info = [self userInfo];
+    return [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+}
+
+- (CGSize)keyboardSize
+{
+    return [self keyboardRect].size;
+}
+
+@end
+
 @implementation UIView (KeyboardNotification)
 
 + (void)animateWithKeybordNotification:(NSNotification *)aNotification animations:(void (^)(void))animations
 {
-    NSDictionary *info = [aNotification userInfo];
-    double duration = [(NSNumber *)[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    unsigned int curve = [(NSNumber *)[info objectForKey:UIKeyboardAnimationCurveUserInfoKey] unsignedIntValue];
-    
-    [UIView animateWithDuration:duration
-                          delay:0.0
-                        options:curve
-                     animations:animations
-                     completion:nil];
+    double duration = [[aNotification keyboardAnimationDuration] doubleValue];
+    unsigned int curve = [[aNotification keyboardAnimationCurve] unsignedIntValue];
+
+    [UIView animateWithDuration:duration delay:0.0 options:curve animations:animations completion:nil];
 }
 
 @end
@@ -26,20 +48,18 @@
 {
     UIEdgeInsets contentInset = self.contentInset;
     UIEdgeInsets scrollIndicatorInsets = self.scrollIndicatorInsets;
-    
+
     contentInset.bottom = bottom;
     scrollIndicatorInsets.bottom = bottom;
-    
+
     self.contentInset = contentInset;
     self.scrollIndicatorInsets = scrollIndicatorInsets;
 }
 
 - (void)keyboardWillShow:(NSNotification *)aNotification
 {
-    NSDictionary *info = [aNotification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     [UIView animateWithKeybordNotification:aNotification animations:^{
-        [self setBottomInset:kbSize.height];
+        [self setBottomInset:[aNotification keyboardSize].height];
     }];
 }
 

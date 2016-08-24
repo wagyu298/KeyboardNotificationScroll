@@ -3,6 +3,15 @@
 
 #import <UIKit/UIKit.h>
 
+@interface NSNotification (KeyboardNotification)
+
+- (NSNumber *)keyboardAnimationDuration;
+- (NSNumber *)keyboardAnimationCurve;
+- (CGRect)keyboardRect;
+- (CGSize)keyboardSize;
+
+@end
+
 @interface UIView (KeyboardNotification)
 
 + (void)animateWithKeybordNotification:(NSNotification *)aNotification animations:(void (^)(void))animations;
